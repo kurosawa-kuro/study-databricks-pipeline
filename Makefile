@@ -59,7 +59,7 @@ install: venv
 sql-test:
 	@test -x "$(VENV_PYTHON)" || (echo "Missing $(VENV_PYTHON). Run 'make install' first." && exit 2)
 	@test -n "$(DATABRICKS_TOKEN)" || (echo "Missing DWH_DATABRICKS_TOKEN or DATABRICKS_TOKEN" && exit 2)
-	DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
+	@DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
 	DATABRICKS_HTTP_PATH="$(DATABRICKS_HTTP_PATH)" \
 	DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)" \
 	./scripts/databricks_sql_test.sh
@@ -67,7 +67,7 @@ sql-test:
 sql-catalog:
 	@test -x "$(VENV_PYTHON)" || (echo "Missing $(VENV_PYTHON). Run 'make install' first." && exit 2)
 	@test -n "$(DATABRICKS_TOKEN)" || (echo "Missing DWH_DATABRICKS_TOKEN or DATABRICKS_TOKEN" && exit 2)
-	DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
+	@DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
 	DATABRICKS_HTTP_PATH="$(DATABRICKS_HTTP_PATH)" \
 	DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)" \
 	./scripts/databricks_sql_test.sh --mode catalog
@@ -75,7 +75,7 @@ sql-catalog:
 sql-values:
 	@test -x "$(VENV_PYTHON)" || (echo "Missing $(VENV_PYTHON). Run 'make install' first." && exit 2)
 	@test -n "$(DATABRICKS_TOKEN)" || (echo "Missing DWH_DATABRICKS_TOKEN or DATABRICKS_TOKEN" && exit 2)
-	DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
+	@DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
 	DATABRICKS_HTTP_PATH="$(DATABRICKS_HTTP_PATH)" \
 	DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)" \
 	./scripts/databricks_sql_test.sh --mode values
@@ -84,7 +84,7 @@ sql-query:
 	@test -n "$(QUERY)" || (echo 'Usage: make sql-query QUERY="SELECT 42 AS answer"' && exit 2)
 	@test -x "$(VENV_PYTHON)" || (echo "Missing $(VENV_PYTHON). Run 'make install' first." && exit 2)
 	@test -n "$(DATABRICKS_TOKEN)" || (echo "Missing DWH_DATABRICKS_TOKEN or DATABRICKS_TOKEN" && exit 2)
-	DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
+	@DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
 	DATABRICKS_HTTP_PATH="$(DATABRICKS_HTTP_PATH)" \
 	DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)" \
 	./scripts/databricks_sql_test.sh --query "$(QUERY)"
@@ -92,7 +92,7 @@ sql-query:
 volume-create:
 	@test -x "$(VENV_PYTHON)" || (echo "Missing $(VENV_PYTHON). Run 'make install' first." && exit 2)
 	@test -n "$(DATABRICKS_TOKEN)" || (echo "Missing DWH_DATABRICKS_TOKEN or DATABRICKS_TOKEN" && exit 2)
-	DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
+	@DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
 	DATABRICKS_HTTP_PATH="$(DATABRICKS_HTTP_PATH)" \
 	DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)" \
 	./scripts/databricks_sql_test.sh --sql-file ./databricks/sql/volume/01_create_managed_volume.sql
@@ -101,14 +101,14 @@ volume-upload:
 	@test -n "$(LOCAL_FILE)" || (echo 'Usage: make volume-upload LOCAL_FILE=./data/customers.csv VOLUME_PATH=/Volumes/workspace/default/raw_csv/customers.csv' && exit 2)
 	@test -n "$(VOLUME_PATH)" || (echo 'Usage: make volume-upload LOCAL_FILE=./data/customers.csv VOLUME_PATH=/Volumes/workspace/default/raw_csv/customers.csv' && exit 2)
 	@test -n "$(DATABRICKS_FILES_TOKEN)" || (echo 'Missing DWH_DATABRICKS_TOKEN, DWH_DATABRICKS_FILES_TOKEN, DATABRICKS_TOKEN, or DATABRICKS_FILES_TOKEN' && exit 2)
-	DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
+	@DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
 	DATABRICKS_FILES_TOKEN="$(DATABRICKS_FILES_TOKEN)" \
 	./scripts/databricks_volume_upload.sh "$(LOCAL_FILE)" "$(VOLUME_PATH)"
 
 table-create:
 	@test -x "$(VENV_PYTHON)" || (echo "Missing $(VENV_PYTHON). Run 'make install' first." && exit 2)
 	@test -n "$(DATABRICKS_TOKEN)" || (echo "Missing DWH_DATABRICKS_TOKEN or DATABRICKS_TOKEN" && exit 2)
-	DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
+	@DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
 	DATABRICKS_HTTP_PATH="$(DATABRICKS_HTTP_PATH)" \
 	DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)" \
 	./scripts/databricks_sql_test.sh --sql-file ./databricks/sql/table/01_create_target_table.sql
@@ -116,7 +116,7 @@ table-create:
 table-copy:
 	@test -x "$(VENV_PYTHON)" || (echo "Missing $(VENV_PYTHON). Run 'make install' first." && exit 2)
 	@test -n "$(DATABRICKS_TOKEN)" || (echo "Missing DWH_DATABRICKS_TOKEN or DATABRICKS_TOKEN" && exit 2)
-	DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
+	@DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
 	DATABRICKS_HTTP_PATH="$(DATABRICKS_HTTP_PATH)" \
 	DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)" \
 	./scripts/databricks_sql_test.sh --sql-file ./databricks/sql/table/02_copy_into_from_volume.sql
@@ -124,7 +124,7 @@ table-copy:
 table-verify:
 	@test -x "$(VENV_PYTHON)" || (echo "Missing $(VENV_PYTHON). Run 'make install' first." && exit 2)
 	@test -n "$(DATABRICKS_TOKEN)" || (echo "Missing DWH_DATABRICKS_TOKEN or DATABRICKS_TOKEN" && exit 2)
-	DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
+	@DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
 	DATABRICKS_HTTP_PATH="$(DATABRICKS_HTTP_PATH)" \
 	DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)" \
 	./scripts/databricks_sql_test.sh --sql-file ./databricks/sql/table/03_verify_table.sql
@@ -132,7 +132,7 @@ table-verify:
 volume-clean:
 	@test -x "$(VENV_PYTHON)" || (echo "Missing $(VENV_PYTHON). Run 'make install' first." && exit 2)
 	@test -n "$(DATABRICKS_TOKEN)" || (echo "Missing DWH_DATABRICKS_TOKEN or DATABRICKS_TOKEN" && exit 2)
-	DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
+	@DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" \
 	DATABRICKS_HTTP_PATH="$(DATABRICKS_HTTP_PATH)" \
 	DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)" \
 	./scripts/databricks_sql_test.sh --sql-file ./databricks/sql/volume/02_drop_volume_artifacts.sql
@@ -149,13 +149,14 @@ gcs-upload:
 
 secret-create:
 	@test -n "$(DWH_DATABRICKS_TOKEN)" || (echo "Missing DWH_DATABRICKS_TOKEN (run via 'doppler run -- make secret-create')" && exit 2)
-	gcloud secrets describe "$(SECRET_NAME)" --project="$(GCP_PROJECT)" >/dev/null 2>&1 \
+	@gcloud secrets describe "$(SECRET_NAME)" --project="$(GCP_PROJECT)" >/dev/null 2>&1 \
 	  || gcloud secrets create "$(SECRET_NAME)" --replication-policy=automatic --project="$(GCP_PROJECT)"
-	printf '%s' "$(DWH_DATABRICKS_TOKEN)" | gcloud secrets versions add "$(SECRET_NAME)" --data-file=- --project="$(GCP_PROJECT)"
+	@printf '%s' "$(DWH_DATABRICKS_TOKEN)" | gcloud secrets versions add "$(SECRET_NAME)" --data-file=- --project="$(GCP_PROJECT)"
+	@echo "Stored PAT into Secret Manager: $(SECRET_NAME)"
 
 job-deploy:
 	GCP_PROJECT="$(GCP_PROJECT)" GCP_REGION="$(GCP_REGION)" AR_REPO="$(AR_REPO)" \
-	JOB_NAME="$(JOB_NAME)" IMAGE="$(IMAGE)" SECRET_NAME="$(SECRET_NAME)" \
+	JOB_NAME="$(JOB_NAME)" IMAGE="$(IMAGE)" SECRET_NAME="$(SECRET_NAME)" GCS_BUCKET="$(GCS_BUCKET)" \
 	DATABRICKS_SERVER_HOSTNAME="$(DATABRICKS_SERVER_HOSTNAME)" RUNTIME_SA="$(RUNTIME_SA)" \
 	./scripts/deploy_cloudrun_job.sh
 

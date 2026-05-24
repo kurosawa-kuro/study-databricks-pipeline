@@ -34,6 +34,4 @@
 
 ## 検証ステータス
 
-> 本リポジトリでの Databricks / GCP 実行検証は **未実施**。実装は完了しているが、実際の workspace / mlops-dev-a に対する疎通は人間検証時に行う。結果は [02_pipeline_validation.md](02_pipeline_validation.md) に記録する。
-
-前身 `study-databricks-import` では Free Edition で `Managed Volume + Files API + read_files() + MATERIALIZED VIEW`、`current_catalog() = workspace`、`row_count = 3` まで確認済み(JSON 版)。本リポジトリは入力を CSV、最終段を COPY INTO の実テーブルに変更したため、CSV/COPY INTO 経路と GCS/Cloud Run 経路は改めて検証が必要。
+> **検証済み (2026-05-24)**。mlops-dev-a + Databricks Free Edition に対し、GCS → Cloud Run Job → Volume → COPY INTO → Table の end-to-end が成功(`row_count = 3`、COPY INTO 冪等性も確認)。詳細は [02_pipeline_validation.md](02_pipeline_validation.md)。

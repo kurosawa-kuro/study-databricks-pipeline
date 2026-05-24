@@ -2,53 +2,66 @@
 
 ## 検証対象
 
-`ローカル CSV → GCS → Cloud Run Job → Managed Volume → COPY INTO → Table` が Databricks Free Edition + GCP (mlops-dev-a) で成立するかを確認する。
+`ローカル CSV → GCS → Cloud Run Job → Managed Volume → COPY INTO → Table` が Databricks Free Edition + GCP (mlops-dev-a) で成立するか。
 
-> ステータス: **未実施**(実装完了。実 workspace / GCP への疎通は人間検証時に実行し、結果を本ファイルへ追記する)。
+> ステータス: **GCP 経路は検証済み (2026-05-24)**。Phase 1 / Phase 2+ ともに end-to-end 成功。
 
-## 検証手順(予定)
+## Phase 2+: GCS + Cloud Run(検証済み 2026-05-24)
 
-### Phase 1: Databricks 側(GCS/Cloud Run 抜き)
-
-```bash
-doppler run -- make volume-create
-doppler run -- make volume-upload \
-  LOCAL_FILE=./data/customers.csv \
-  VOLUME_PATH=/Volumes/workspace/default/raw_csv/customers.csv
-doppler run -- make table-create
-doppler run -- make table-copy
-doppler run -- make table-verify     # 期待値: row_count = 3
-doppler run -- make table-copy       # 再実行
-doppler run -- make table-verify     # 期待値: row_count = 3 のまま(COPY INTO の冪等性)
-```
-
-期待結果(記入待ち):
-
-- [ ] `CREATE VOLUME IF NOT EXISTS workspace.default.raw_csv`
-- [ ] `Upload succeeded: ./data/customers.csv -> /Volumes/workspace/default/raw_csv/customers.csv`
-- [ ] `CREATE TABLE IF NOT EXISTS workspace.default.customers`
-- [ ] COPY INTO 後 `row_count = 3`
-- [ ] COPY INTO 再実行で row_count が増えない
-
-### Phase 2+: GCS + Cloud Run
+実行コマンド:
 
 ```bash
-gcloud config set project mlops-dev-a
 make gcs-bucket-create
 make gcs-upload CSV=./data/customers.csv
 doppler run -- make secret-create
 make job-deploy
+doppler run -- make volume-create
 make job-run OBJECT=incoming/customers.csv
-doppler run -- make table-copy
+```
+
+確認結果:
+
+- [x] `gs://mlops-dev-a-databricks-pipeline/incoming/customers.csv` に配置
+- [x] PAT を Secret Manager `databricks-pat` (version 1) に登録
+- [x] イメージを Artifact Registry `databricks-pipeline/csv-to-volume:latest` に build/push
+- [x] Cloud Run Job `csv-to-volume` デプロイ成功
+- [x] Job 実行成功(execution `csv-to-volume-q5wkj` completed)
+- [x] Volume 着地確認: `LIST '/Volumes/workspace/default/raw_csv/'` →
+      `customers.csv` (size=148)
+
+### 必要だった IAM(deploy スクリプトに冪等で組込済)
+
+Cloud Run の実行 SA(`<projectNumber>-compute@developer.gserviceaccount.com`)に以下が必要:
+
+- `roles/secretmanager.secretAccessor`(secret `databricks-pat`)
+- `roles/storage.objectViewer`(bucket)
+
+初回 deploy 時に未付与だと `Permission denied on secret ...` で失敗する。`scripts/deploy_cloudrun_job.sh` が deploy 前に冪等付与するよう修正済み。
+
+## Phase 1: Databricks 側 COPY INTO(検証済み 2026-05-24)
+
+> Volume 上の CSV(Cloud Run Job が配置)を実テーブルへ COPY INTO。クリーン状態(table drop 後)で計測。
+
+```bash
+doppler run -- make sql-query QUERY="DROP TABLE IF EXISTS workspace.default.customers"
+doppler run -- make table-create
+doppler run -- make table-copy     # 1st
+doppler run -- make table-verify
+doppler run -- make table-copy     # 2nd
 doppler run -- make table-verify
 ```
 
-期待結果(記入待ち):
+確認結果:
 
-- [ ] `gs://mlops-dev-a-databricks-pipeline/incoming/customers.csv` に配置
-- [ ] Cloud Run Job `csv-to-volume` 成功
-- [ ] Volume に `customers.csv` が存在(`LIST '/Volumes/workspace/default/raw_csv/'`)
-- [ ] `table-verify` で row_count = 3
+- [x] `CREATE TABLE IF NOT EXISTS workspace.default.customers`
+- [x] 1st COPY INTO: `num_inserted_rows = 3`
+- [x] verify: `row_count = 3`
+- [x] 2nd COPY INTO: `num_inserted_rows = 0`(取込済みファイルを skip)
+- [x] verify: `row_count = 3` のまま(**COPY INTO の冪等性を確認**)
+
+### 注意した点
+
+- `workspace.default.customers` は前身 `study-databricks-import` の `sql-values`(VALUES seed と同じ 3 行)で既に存在しており、最初の素朴な COPY INTO では `row_count = 6` になった。COPY INTO 自体は正しく 3 行追加していた。クリーン計測のため table を drop してから測り直した。
 
 ## 関連 SQL
 

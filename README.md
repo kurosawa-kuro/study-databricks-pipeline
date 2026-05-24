@@ -40,6 +40,30 @@ doppler run -- make table-verify                # row_count 確認
 
 詳細な設計・実現可能性・段階移行計画は [docs/04_work_plan.md](docs/04_work_plan.md) を参照。
 
+## 検証結果 (2026-05-24)
+
+mlops-dev-a (asia-northeast1) + Databricks Free Edition に対し、フルパイプラインを end-to-end で検証済み。
+
+| ステップ | 結果 |
+|---|---|
+| GCS バケット作成 + `customers.csv` upload | ✅ `gs://mlops-dev-a-databricks-pipeline/incoming/customers.csv` |
+| Secret Manager に PAT 登録 | ✅ `databricks-pat` |
+| イメージ build/push (Artifact Registry) | ✅ `databricks-pipeline/csv-to-volume:latest` |
+| Cloud Run Job デプロイ | ✅ `csv-to-volume` |
+| Job 実行 (GCS → Volume) | ✅ Volume 着地確認 (`customers.csv`, 148B) |
+| COPY INTO 1回目 | ✅ `num_inserted_rows = 3` → `row_count = 3` |
+| COPY INTO 2回目 (冪等性) | ✅ `num_inserted_rows = 0` → `row_count = 3` 維持 |
+
+取り込み後の `workspace.default.customers`(Databricks Catalog Explorer):
+
+![Databricks Catalog Explorer 上の customers テーブル(3 行)](image.png)
+
+補足:
+
+- Cloud Run の実行 SA に `roles/secretmanager.secretAccessor`(secret)と `roles/storage.objectViewer`(bucket)が必要。`scripts/deploy_cloudrun_job.sh` が deploy 前に冪等付与する。
+- COPY INTO は取込済みファイルを記録するため、再実行で重複行を作らない(冪等)。
+- 検証ログの詳細は [docs/02_pipeline_validation.md](docs/02_pipeline_validation.md)。
+
 ## 必須: doppler 経由で実行する
 
 Databricks 系 target は秘密(`DWH_DATABRICKS_TOKEN` 等)を環境変数から読むため、`doppler run --` を前置する。GCS / Cloud Run 系は `gcloud` 認証下で実行する。

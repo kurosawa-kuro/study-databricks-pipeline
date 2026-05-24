@@ -28,7 +28,24 @@ docker buildx build --platform linux/amd64 \
   -f "${ROOT_DIR}/cloudrun/Dockerfile" \
   -t "${IMAGE}" --push "${ROOT_DIR}"
 
-# 3. Cloud Run Job deploy (create or update)
+# 3. 実行 SA に必要ロールを付与 (冪等)。
+#    RUNTIME_SA 未指定なら Cloud Run のデフォルト = <projectNumber>-compute@developer.gserviceaccount.com
+EFFECTIVE_SA="${RUNTIME_SA}"
+if [[ -z "${EFFECTIVE_SA}" ]]; then
+  PROJECT_NUMBER="$(gcloud projects describe "${GCP_PROJECT}" --format='value(projectNumber)')"
+  EFFECTIVE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+fi
+gcloud secrets add-iam-policy-binding "${SECRET_NAME}" \
+  --member="serviceAccount:${EFFECTIVE_SA}" \
+  --role="roles/secretmanager.secretAccessor" \
+  --project="${GCP_PROJECT}" >/dev/null
+if [[ -n "${GCS_BUCKET:-}" ]]; then
+  gcloud storage buckets add-iam-policy-binding "gs://${GCS_BUCKET}" \
+    --member="serviceAccount:${EFFECTIVE_SA}" \
+    --role="roles/storage.objectViewer" >/dev/null
+fi
+
+# 4. Cloud Run Job deploy (create or update)
 gcloud run jobs deploy "${JOB_NAME}" \
   --image="${IMAGE}" \
   --region="${GCP_REGION}" \
