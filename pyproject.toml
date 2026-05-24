@@ -1,0 +1,21 @@
+[project]
+name = "study-databricks-pipeline"
+version = "0.1.0"
+description = "Study repository for a GCS -> Cloud Run Jobs -> Databricks Managed Volume -> Table pipeline on Databricks Free Edition."
+requires-python = ">=3.10"
+dependencies = [
+  "databricks-sql-connector>=4.0",
+  "google-cloud-storage>=2.16",
+  "requests>=2.31",
+]
+
+[project.scripts]
+databricks-sql-test = "src.sql_connectivity:main"
+csv-to-volume = "src.volume_uploader:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["src"]

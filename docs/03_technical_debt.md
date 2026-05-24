@@ -1,0 +1,23 @@
+# 技術的債務
+
+> GCS / Cloud Run 経由の取込は後回しではなく、本リポジトリの主目的になった。
+> 設計は [04_work_plan.md](04_work_plan.md) を参照(ローカル CSV → GCS → Cloud Run Jobs → Managed Volume → Table)。
+
+## いま未対応
+
+- streaming table 化
+- 差分取り込みの自動化(COPY INTO の特性を活かす)
+- pipeline refresh 戦略の整理
+- pipeline 監視とエラー運用
+- Cloud Scheduler 連携 / 複数 CSV・複数テーブル対応
+
+## repo 内の債務
+
+- SQL ファイルが増えてきたので、`foundation / volume / pipeline` などに再編余地がある
+- 実行結果サマリを自動保存する仕組みはまだない
+
+## 方針として残すもの
+
+- `data/` は参照用 fixture のまま維持する
+- `DWH_DATABRICKS_TOKEN` は `sql, files` の両 scope を前提にする
+- GCS は後回しとし、先に Databricks Free Edition 内で閉じるパイプライン学習を優先する
