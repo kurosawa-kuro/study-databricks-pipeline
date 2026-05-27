@@ -38,7 +38,7 @@ doppler run -- make table-copy                  # COPY INTO
 doppler run -- make table-verify                # row_count 確認
 ```
 
-詳細な設計・実現可能性・段階移行計画は [docs/04_work_plan.md](docs/04_work_plan.md) を参照。
+詳細な設計・実現可能性・段階移行計画は [docs/06_作業計画書.md](docs/06_作業計画書.md) を参照。
 
 ## 検証結果 (2026-05-24)
 
@@ -62,7 +62,7 @@ mlops-dev-a (asia-northeast1) + Databricks Free Edition に対し、フルパイ
 
 - Cloud Run の実行 SA に `roles/secretmanager.secretAccessor`(secret)と `roles/storage.objectViewer`(bucket)が必要。`scripts/deploy_cloudrun_job.sh` が deploy 前に冪等付与する。
 - COPY INTO は取込済みファイルを記録するため、再実行で重複行を作らない(冪等)。
-- 検証ログの詳細は [docs/02_pipeline_validation.md](docs/02_pipeline_validation.md)。
+- 検証ログの詳細は [docs/04_検証記録.md](docs/04_検証記録.md)。
 
 ## 必須: doppler 経由で実行する
 
@@ -74,7 +74,10 @@ doppler setup --project kuro-dev-k --config dev --no-interactive   # 初回の�
 
 ## ドキュメント
 
-- [docs/04_work_plan.md](docs/04_work_plan.md) — 作業計画書(設計・実現可能性・段階移行)
-- [docs/01_confirmed_scope.md](docs/01_confirmed_scope.md) — 確定スコープ
-- [docs/02_pipeline_validation.md](docs/02_pipeline_validation.md) — 検証記録
-- [docs/03_technical_debt.md](docs/03_technical_debt.md) — 技術的債務
+- [docs/01_仕様書.md](docs/01_仕様書.md) — 仕様書(確定仕様)
+- [docs/02_実装カタログ.md](docs/02_実装カタログ.md) — 実装カタログ(全成果物の参照テーブル)
+- [docs/03_確定スコープ.md](docs/03_確定スコープ.md) — 確定スコープ
+- [docs/04_検証記録.md](docs/04_検証記録.md) — 検証記録
+- [docs/05_技術的債務.md](docs/05_技術的債務.md) — 技術的債務
+- [docs/06_作業計画書.md](docs/06_作業計画書.md) — 作業計画書(設計・実現可能性・段階移行)
+- [docs/07_学習検討.md](docs/07_学習検討.md) — 次にやるべき学習の検討メモ
