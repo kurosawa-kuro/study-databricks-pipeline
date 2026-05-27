@@ -38,7 +38,7 @@ doppler run -- make table-copy                  # COPY INTO
 doppler run -- make table-verify                # row_count 確認
 ```
 
-詳細な設計・実現可能性・段階移行計画は [docs/06_作業計画書.md](docs/06_作業計画書.md) を参照。
+確定仕様・設計の詳細は [docs/01_仕様書.md](docs/01_仕様書.md) を参照。
 
 ## 検証結果 (2026-05-24)
 
@@ -79,5 +79,4 @@ doppler setup --project kuro-dev-k --config dev --no-interactive   # 初回の�
 - [docs/03_確定スコープ.md](docs/03_確定スコープ.md) — 確定スコープ
 - [docs/04_検証記録.md](docs/04_検証記録.md) — 検証記録
 - [docs/05_技術的債務.md](docs/05_技術的債務.md) — 技術的債務
-- [docs/06_作業計画書.md](docs/06_作業計画書.md) — 作業計画書(設計・実現可能性・段階移行)
-- [docs/07_学習検討.md](docs/07_学習検討.md) — 次にやるべき学習の検討メモ
+- [docs/06_学習検討.md](docs/06_学習検討.md) — 次にやるべき学習の検討メモ

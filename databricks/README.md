@@ -48,4 +48,3 @@ doppler run -- make volume-clean
 - 確定スコープ: [docs/03_確定スコープ.md](../docs/03_確定スコープ.md)
 - 検証記録: [docs/04_検証記録.md](../docs/04_検証記録.md)
 - 技術的債務: [docs/05_技術的債務.md](../docs/05_技術的債務.md)
-- 作業計画書: [docs/06_作業計画書.md](../docs/06_作業計画書.md)

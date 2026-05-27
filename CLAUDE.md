@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Databricks 側は **Free Edition のみ** を前提にする。前提にしない: Free Trial / 有償 workspace / 管理者権限 / Databricks Connect / GCS external location・external volume。catalog は常に `workspace` 固定。
 
-**設計の肝**: Free Edition は GCS を external volume として直接マウントできないため、**Cloud Run Job (`csv-to-volume`) が「GCS DL → Files API PUT」を仲介** して Managed Volume へ載せる。詳細は [docs/06_作業計画書.md](docs/06_作業計画書.md)。
+**設計の肝**: Free Edition は GCS を external volume として直接マウントできないため、**Cloud Run Job (`csv-to-volume`) が「GCS DL → Files API PUT」を仲介** して Managed Volume へ載せる。詳細は [docs/01_仕様書.md](docs/01_仕様書.md)。
 
 ## 必須: doppler 経由で実行する(Databricks 系)
 
